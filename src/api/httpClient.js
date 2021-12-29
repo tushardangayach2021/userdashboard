@@ -29,6 +29,13 @@ const post = async (url,data, tokenConfig = {}) => {
     return response;
 }
 const put = async (url,data, tokenConfig = {}) => {
+    const response = await axiosInstance.put(url, data);
+    if (response.status >= 200 && response.status < 300) {
+        return { data: response.data, status: response.status }
+    }
+    return response;
+}
+const patch = async (url,data, tokenConfig = {}) => {
     const response = await axiosInstance.patch(url, data);
     if (response.status >= 200 && response.status < 300) {
         return { data: response.data, status: response.status }
@@ -52,5 +59,5 @@ const setupInterceptors = (store) => {
     })
 }
 
-export { setAxiosBase, fetch, remove, put, post }
+export { setAxiosBase, fetch, remove, put, post, patch }
 export default configurationSetting;

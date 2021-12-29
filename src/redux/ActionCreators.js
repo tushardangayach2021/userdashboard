@@ -1,5 +1,6 @@
 import { API } from '../api/api';
-import { fetch, post, remove } from '../api/httpClient';
+import { fetch, patch, post, remove } from '../api/httpClient';
+import localStorageService from '../api/localStorageService';
 import * as ActionTypes from './ActionTypes';
             
 // actions
@@ -23,31 +24,24 @@ export const signupUser = (user) => {
         payload: user
     }
 };
-export const checkUserLogin = ()=>dispatch=>{
-    let users;
+export const checkUserLogin = ()=> async ()=>{
+    let users; 
     let signedUserComplete;
     let isUserMatch=false;
-    (async function () {
+    // console.log("id:",id)
+    const id= localStorageService.getUserId()
+    console.log("id:",id)
+
         const url = API.AUTH.REGISTER;
         try {
             const response = await fetch(url);
-            console.log(response);
             users=response.data;
-            isUserMatch = users.some((e, i) => {
-                    if(e.active===1){
-                        signedUserComplete = e;
-                    }
-                    console.log("Inside signinUserFinal", signedUserComplete)
-                
-                return e.active===1
-            })
-            console.log("checkUserLogin", signedUserComplete,users,isUserMatch)
-            dispatch(signinUserFinal(signedUserComplete,users,isUserMatch))
-            
+            console.log("In checkUserLogin", response.data, users[parseInt(id)-1]);
+            return {isUserLogin: users[parseInt(id)-1].active, userLogin: users[parseInt(id)-1].active?users[parseInt(id)-1]:{}}
+            // console.log("checkUserLogin", signedUserComplete,users,isUserMatch)
         } catch {
             console.log("Issue in posting data")
         }
-    })();
 }
 const signinUserFinal =(signedUserComplete,users,isUserMatch)=>{
     return {
@@ -76,34 +70,26 @@ export const signinUser = (user)=>(dispatch) => {
                 return e.email === signinedUser.email && e.password === signinedUser.password
             })
             dispatch(signinUserFinal(signedUserComplete,users,isUserMatch))
-            
         } catch {
             console.log("Issue in posting data")
         }
     })(user);
     console.log("userdet in action", {signedUserComplete,users,isUserMatch})
-    // return {
-    //     type: ActionTypes.SIGIN_USER,
-    //     payload: {signedUserComplete,users,isUserMatch}
-    // }
 };
-export const signoutUser = () => {
-    let newusers;
-    (async function () {
+export const signoutUser = ()=> async () => {
         const url = API.AUTH.REGISTER;
-        try {
-            const response = await fetch(url);
-            console.log(response);
-            let users=response.data;
-            newusers = users.map((e, i) =>{ e.active=0;})
-            
-        } catch {
-            console.log("Issue in posting data")
-        }
-    })();
-    console.log("userdet in action", {newusers})
-    return {
-        type: ActionTypes.SIGNOUT_USER,
+        const id = localStorageService.getUserId();
+    try {
+        const response1 = await fetch(url+'/'+id);
+        response1.data.active=0;
+        let user_detail = response1.data;
+        console.log("user_detail",user_detail)
+        const response2 = await patch(url+'/'+id, user_detail);
+        console.log(response1, response2);
+        window.location.href = 'http://localhost:3001/signin/?href=' + "http://localhost:3000/dashboard/user";
+
+    } catch{
+        console.log()
     }
 };
 const userToUser = (user) => ({

@@ -12,17 +12,6 @@ const checkUserLogin = (id, callback)=>async (dispatch)=>{
             const response = await fetch(url);
             console.log("checkUserLogin data", response);
             users=response.data;
-            // isUserMatch = users.some((e, i) => {
-            //     if (e.email === signinedUser.email && e.password === signinedUser.password) {
-            //         console.log(e.email, signinedUser.email, e.password, signinedUser.password, e.email === signinedUser.email, e.password === signinedUser.password)
-            //         e.active=1;
-            //         signedUserComplete = e
-            //         console.log("Inside", signedUserComplete)
-            //     }
-            //     return e.email === signinedUser.email && e.password === signinedUser.password
-            // })
-            dispatch(signinUserFinal(signedUserComplete,users,isUserMatch))
-            
         } catch {
             console.log("Issue in posting data")
         }

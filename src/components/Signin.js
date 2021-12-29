@@ -11,11 +11,6 @@ import { Link, Redirect } from "react-router-dom";
 import { useTranslation } from 'react-i18next';
 
 export default function Signin(props) {
-//   const a =1;
-
-    // useEffect(() => {
-    //     console.log("checkUserLogin",props.checkUserLogin())
-    //   }, [a])
     const [showPassword, setShowPassword]=useState(false)
     const handleSubmit = (e) => {
         e.preventDefault();
