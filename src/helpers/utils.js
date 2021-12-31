@@ -4,6 +4,16 @@ import _intersection from 'lodash/intersection'
 import _isEmpty from 'lodash/isEmpty'
 import _trim from 'lodash/trim'
 
+export const mapStateWithData = function (data, initialState) {
+    let obj = {}
+    Object.keys(initialState).forEach((key) => {
+      obj[key] = data[key] ? data[key] : initialState[key]
+    })
+    return obj
+  }
+export const getSchoolUrl = function ({ district, school, to }) {
+    return `/${district || ''}/${school || ''}/${to || ''}`.replace(/\/\/+/g, '/')
+  } 
 export const isEmpty = _isEmpty // 1 param: and returns a boolean value
 
 export const get = _get // 1st parameter obj and second but now can use es7 ?. for solving issue

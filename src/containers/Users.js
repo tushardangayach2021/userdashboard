@@ -13,7 +13,8 @@ import {
 } from 'reactstrap';
 import { useTranslation } from 'react-i18next';
 import localStorageService from "../api/localStorageService";
-
+import { Avatar, Box, Button } from "@mui/material";
+import EditIcon from '@material-ui/icons/Edit';
 export default function Users(props) {
   const user_id = window.location.href.split('user_id=')[1]
   localStorageService.setUserId(user_id)
@@ -94,52 +95,72 @@ export default function Users(props) {
           </Nav>
         </Collapse>
       </Navbar> */}
-      <div className="container mt-5 pt-5">
-        <div className="row">
-          <div className="col-md-12 col-12 col-lg-12">
-            <h1 className="text-center">{t('dashboard.heading')}</h1>
+      <Box className="">
+
+        <div className="container mt-5 pt-5">
+          <div className="row">
+
+            <div className="col-md-12 col-12 col-lg-12">
+              <h1 className="text-center">{t('dashboard.heading')}</h1>
+            </div>
+          </div>
+          
+          <div className="row">
+            <div className="col-2"></div>
+            <div className="col-8 text-left card">
+            <div className="row" >
+              
+                <Avatar src={loginedUser.profile?loginedUser.profile:"/logo92.png"} style={{
+                  margin: "10px",
+                  width: "60px",
+                  height: "60px"
+                }}
+                 />
+              </div>
+              <div className="row" >
+               <Link to="/dashboard/edituser"> <Button variant="contained">
+                  Edit Profile
+                  <EditIcon />
+                </Button>
+                </Link>
+              </div>
+              <div className="row">
+                <div className="col-3 font-weight-bold">
+                  {t('dashboard.feilds.firstname')}
+                </div>
+                <div className="col-9">
+                  {loginedUser.firstname}
+                </div>
+              </div>
+              <div className="row">
+
+                <div className="col-3 font-weight-bold">
+                  {t('dashboard.feilds.lastname')}
+                </div>
+                <div className="col-9">
+                  {loginedUser.lastname}
+                </div>
+              </div>
+              <div className="row">
+                <div className="col-3 font-weight-bold">
+                  {t('dashboard.feilds.email')}
+                </div>
+                <div className="col-9">
+                  {loginedUser.email}
+                </div>
+              </div>
+              <div className="row">
+                <div className="col-3 font-weight-bold">
+                  {t('dashboard.feilds.dob')}
+                </div>
+                <div className="col-9">
+                  {loginedUser.dob}
+                </div>
+              </div>
+            </div>
           </div>
         </div>
-        <div className="row">
-          <div className="col-2"></div>
-          <div className="col-8 text-left card">
-            <div className="row">
-              <div className="col-3 font-weight-bold">
-                {t('dashboard.feilds.firstname')}
-              </div>
-              <div className="col-9">
-                {loginedUser.firstname}
-              </div>
-            </div>
-            <div className="row">
-
-              <div className="col-3 font-weight-bold">
-                {t('dashboard.feilds.lastname')}
-              </div>
-              <div className="col-9">
-                {loginedUser.lastname}
-              </div>
-            </div>
-            <div className="row">
-              <div className="col-3 font-weight-bold">
-                {t('dashboard.feilds.email')}
-              </div>
-              <div className="col-9">
-                {loginedUser.email}
-              </div>
-            </div>
-            <div className="row">
-              <div className="col-3 font-weight-bold">
-                {t('dashboard.feilds.dob')}
-              </div>
-              <div className="col-9">
-                {loginedUser.dob}
-              </div>
-            </div>
-
-          </div>
-        </div>
-      </div>
+      </Box>
     </>
   );
 }

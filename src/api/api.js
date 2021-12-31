@@ -5,5 +5,6 @@ export const API = {
     CORE: {
         USERNAME: "/name",
         USEREMAIL: "/email",
+        STATEDATA: "/states",
     }
 }

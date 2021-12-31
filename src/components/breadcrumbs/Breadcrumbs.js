@@ -10,7 +10,9 @@ import RouterContext from './../../contexts/route.context'
 import { getSchoolUrl } from './../../helpers/utils'
 
 const SimpleBreadcrumbs = function ({ data }) {
-  const { params } = useContext(RouterContext)
+  // const { params } = useContext(RouterContext)
+  const   params = {district: "",
+  school: ""}
   return (
     <Breadcrumbs separator={<ChevronRight width="18px" />} aria-label="breadcrumb">
       {data.map((link, index) =>

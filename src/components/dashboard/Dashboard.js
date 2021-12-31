@@ -8,6 +8,8 @@ import Users from "../../containers/Users";
 import PersistentDrawerLeft from "../Header";
 import { Box } from "@mui/material";
 import ViewData from "../ViewData";
+import EditUser from "../../containers/EditUser";
+import StatesList from "../../containers/StatesList";
 // import ViewData from "./ViewData";
 
 // const ViewData = React.lazy(() => import("./ViewData")); // Lazy-loaded
@@ -20,6 +22,9 @@ function Dashboard(props) {
     <Switch>
         <Route exact path="/dashboard/" component={()=>(<ViewData />)} />
         <Route exact path="/dashboard/user" component={()=>(<Users isUserLogin={props.isUserLogin} loginedUser={props.loginedUser} signoutUser={props.signoutUser} checkUserLogin={props.checkUserLogin} />)} />
+        <Route exact path="/dashboard/viewdata" component={()=>(<ViewData isUserLogin={props.isUserLogin} loginedUser={props.loginedUser} signoutUser={props.signoutUser} checkUserLogin={props.checkUserLogin} />)} />
+        <Route exact path="/dashboard/edituser" component={()=>(<EditUser isUserLogin={props.isUserLogin} loginedUser={props.loginedUser} signoutUser={props.signoutUser} checkUserLogin={props.checkUserLogin} />)} />
+        <Route exact path="/dashboard/stateslist" component={()=>(<StatesList isUserLogin={props.isUserLogin} loginedUser={props.loginedUser} signoutUser={props.signoutUser} checkUserLogin={props.checkUserLogin} />)} />
     </Switch>
     </Box>
       </>
