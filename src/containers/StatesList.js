@@ -19,10 +19,12 @@ import DoneIcon from "@material-ui/icons/DoneAllTwoTone";
 import RevertIcon from "@material-ui/icons/NotInterestedOutlined";
 import { API } from "../api/api";
 import { fetch } from "../api/httpClient";
-import { STATESDATA } from "../data/statesdata"
+import { default as STATESDATA } from "../data/statesdata.json"
 import { Formik, Field, ErrorMessage, Form } from "formik";
 import * as Yup from "yup";
-
+import { isEmpty } from "../helpers/utils";
+import { Pagination } from "@material-ui/lab";
+import usePagination from "../components/Paginations"
 const CustomTableCell = ({
     row,
     name,
@@ -54,7 +56,7 @@ const CustomTableCell = ({
                         className={`form-control mt-1 ${touched[name] && errors[name] ? "is-invalid" : ""}`}
                         onChange={(e) => {
                             console.log("name", errors[name], name, values);
-                            values[name]=e.target.value;
+                            values[name] = e.target.value;
                             onChange(e, row, editOn, state_id, district_id, city_id)
                         }
                         }
@@ -64,7 +66,7 @@ const CustomTableCell = ({
                         name={name}
                         className="invalid-feedback"
                     />
-                    </>
+                </>
             ) : (
                 row[name]
             )}
@@ -81,76 +83,108 @@ function ChildRow(props) {
         district_id
     } = props;
     const [opena, setOpena] = React.useState(false);
+    const StateTableSchema = Yup.object().shape({
+        name: Yup.string()
+            .required("Required"),
+        dof: Yup.string()
+            .required("Required"),
+        description: Yup.string()
+            .required("Required"),
+    })
     return (
         <React.Fragment>
-            <TableRow key={row.date}>
-                <TableCell>
-                    <IconButton
-                        aria-label="expand row"
-                        size="small"
-                        onClick={() => setOpena(!opena)}
-                    >
-                        {opena ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
-                    </IconButton>
-                </TableCell>
-                <CustomTableCell
-                    {...{
-                        row,
-                        name: "name",
-                        onChange,
-                        editOn: "district",
-                        state_id,
-                        district_id
-                    }}
-                />
-                <CustomTableCell
-                    {...{
-                        row,
-                        name: "dof",
-                        onChange,
-                        editOn: "district",
-                        state_id,
-                        district_id
-                    }}
-                />
-                <CustomTableCell
-                    {...{
-                        row,
-                        name: "description",
-                        onChange,
-                        editOn: "district",
-                        state_id,
-                        district_id
-                    }}
-                />
-                <TableCell
-                // className={classes.selectTableCell}
-                >
-                    {row.isEditMode ? (
-                        <>
-                            <IconButton
-                                aria-label="done"
-                                onClick={() => onToggleEditMode(state_id, "district", row.id)}
+            <Formik
+                initialValues={{ name: row.name, dof: row.dof, description: row.description }}
+                validationSchema={StateTableSchema}
+                onSubmit={(values) => {
+                    console.log(values)
+                    // handleSubmit(values);
+                }}>{({ values, touched, errors, isSubmitting }) => {
+                    console.log(values)
+                    return (
+                        <TableRow key={row.date}>
+                            <TableCell>
+                                <IconButton
+                                    aria-label="expand row"
+                                    size="small"
+                                    onClick={() => setOpena(!opena)}
+                                >
+                                    {opena ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
+                                </IconButton>
+                            </TableCell>
+                            <CustomTableCell
+                                {...{
+                                    row,
+                                    name: "name",
+                                    onChange,
+                                    editOn: "district",
+                                    state_id,
+                                    district_id, touched, errors, values
+                                }}
+                            />
+                            <CustomTableCell
+                                {...{
+                                    row,
+                                    name: "dof",
+                                    onChange,
+                                    editOn: "district",
+                                    state_id,
+                                    district_id, touched, errors, values
+                                }}
+                            />
+                            <CustomTableCell
+                                {...{
+                                    row,
+                                    name: "description",
+                                    onChange,
+                                    editOn: "district",
+                                    state_id,
+                                    district_id, touched, errors, values
+                                }}
+                            />
+                            <TableCell
+                            // className={classes.selectTableCell}
                             >
-                                <DoneIcon />
-                            </IconButton>
-                            <IconButton
-                                aria-label="revert"
-                                onClick={() => onRevert(state_id, "district", row.id)}
-                            >
-                                <RevertIcon />
-                            </IconButton>
-                        </>
-                    ) : (
-                        <IconButton
-                            aria-label="delete"
-                            onClick={() => onToggleEditMode(state_id, "district", row.id)}
-                        >
-                            <EditIcon />
-                        </IconButton>
-                    )}
-                </TableCell>
-            </TableRow>
+                                {row.isEditMode ? (
+                                    <>
+                                        <IconButton
+                                            aria-label="done"
+                                            onClick={() => {
+                                                if (isEmpty(errors)) {
+                                                    console.log("errors", errors);
+                                                    onToggleEditMode(state_id, "district", row.id)
+                                                }
+                                            }
+                                            }
+                                        >
+                                            <DoneIcon />
+                                        </IconButton>
+                                        <IconButton
+                                            aria-label="revert"
+                                            onClick={() => {
+                                                if (isEmpty(errors)) {
+                                                    console.log("errors", errors);
+                                                    onRevert(state_id, "district", row.id);
+                                                }
+                                            }
+                                            }
+                                        >
+                                            <RevertIcon />
+                                        </IconButton>
+                                    </>
+                                ) : (
+                                    <IconButton
+                                        aria-label="delete"
+                                        onClick={() => onToggleEditMode(state_id, "district", row.id)}
+                                    >
+                                        <EditIcon />
+                                    </IconButton>
+                                )}
+                            </TableCell>
+                        </TableRow>)
+                }
+                }
+            </Formik>
             <TableRow>
                 <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
                     <Collapse in={opena} timeout="auto" unmountOnExit>
@@ -169,89 +203,111 @@ function ChildRow(props) {
                                 <TableBody>
                                     {row
                                         ? row.cities.map((row) => (
-                                            <TableRow>
-                                                <CustomTableCell
-                                                    {...{
-                                                        row,
-                                                        name: "name",
-                                                        onChange,
-                                                        editOn: "city",
-                                                        state_id,
-                                                        district_id,
-                                                        city_id: row.id
-                                                    }}
-                                                />
-                                                <CustomTableCell
-                                                    {...{
-                                                        row,
-                                                        name: "dof",
-                                                        onChange,
-                                                        editOn: "city",
-                                                        state_id,
-                                                        district_id,
-                                                        city_id: row.id
-                                                    }}
-                                                />
-                                                <CustomTableCell
-                                                    {...{
-                                                        row,
-                                                        name: "description",
-                                                        onChange,
-                                                        editOn: "city",
-                                                        state_id,
-                                                        district_id,
-                                                        city_id: row.id
-                                                    }}
-                                                />
-                                                <TableCell
-                                                // className={classes.selectTableCell}
-                                                >
-                                                    {row.isEditMode ? (
-                                                        <>
-                                                            <IconButton
-                                                                aria-label="done"
-                                                                onClick={() =>
-                                                                    onToggleEditMode(
-                                                                        state_id,
-                                                                        "city",
-                                                                        district_id,
-                                                                        row.id
-                                                                    )
-                                                                }
-                                                            >
-                                                                <DoneIcon />
-                                                            </IconButton>
-                                                            <IconButton
-                                                                aria-label="revert"
-                                                                onClick={() =>
-                                                                    onRevert(
-                                                                        state_id,
-                                                                        "city",
-                                                                        district_id,
-                                                                        row.id
-                                                                    )
-                                                                }
-                                                            >
-                                                                <RevertIcon />
-                                                            </IconButton>
-                                                        </>
-                                                    ) : (
-                                                        <IconButton
-                                                            aria-label="delete"
-                                                            onClick={() =>
-                                                                onToggleEditMode(
+                                            <Formik
+                                                initialValues={{ name: row.name, dof: row.dof, description: row.description }}
+                                                validationSchema={StateTableSchema}
+                                                onSubmit={(values) => {
+                                                    console.log(values)
+                                                    // handleSubmit(values);
+                                                }}>{({ values, touched, errors, isSubmitting }) => {
+                                                    console.log(values)
+                                                    return (
+                                                        <TableRow>
+                                                            <CustomTableCell
+                                                                {...{
+                                                                    row,
+                                                                    name: "name",
+                                                                    onChange,
+                                                                    editOn: "city",
                                                                     state_id,
-                                                                    "city",
                                                                     district_id,
-                                                                    row.id
-                                                                )
-                                                            }
-                                                        >
-                                                            <EditIcon />
-                                                        </IconButton>
-                                                    )}
-                                                </TableCell>
-                                            </TableRow>
+                                                                    city_id: row.id
+                                                                    , touched, errors, values
+                                                                }}
+                                                            />
+                                                            <CustomTableCell
+                                                                {...{
+                                                                    row,
+                                                                    name: "dof",
+                                                                    onChange,
+                                                                    editOn: "city",
+                                                                    state_id,
+                                                                    district_id,
+                                                                    city_id: row.id, touched, errors, values
+                                                                }}
+                                                            />
+                                                            <CustomTableCell
+                                                                {...{
+                                                                    row,
+                                                                    name: "description",
+                                                                    onChange,
+                                                                    editOn: "city",
+                                                                    state_id,
+                                                                    district_id,
+                                                                    city_id: row.id, touched, errors, values
+                                                                }}
+                                                            />
+                                                            <TableCell
+                                                            // className={classes.selectTableCell}
+                                                            >
+                                                                {row.isEditMode ? (
+                                                                    <>
+                                                                        <IconButton
+                                                                            aria-label="done"
+                                                                            onClick={() => {
+                                                                                if (isEmpty(errors)) {
+                                                                                    console.log("errors", errors);
+
+                                                                                    onToggleEditMode(
+                                                                                        state_id,
+                                                                                        "city",
+                                                                                        district_id,
+                                                                                        row.id
+                                                                                    )
+                                                                                }
+                                                                            }
+                                                                            }
+                                                                        >
+                                                                            <DoneIcon />
+                                                                        </IconButton>
+                                                                        <IconButton
+                                                                            aria-label="revert"
+                                                                            onClick={() => {
+                                                                                if (isEmpty(errors)) {
+                                                                                    console.log("errors", errors);
+                                                                                    onRevert(
+                                                                                        state_id,
+                                                                                        "city",
+                                                                                        district_id,
+                                                                                        row.id
+                                                                                    )
+                                                                                }
+                                                                            }
+                                                                            }
+                                                                        >
+                                                                            <RevertIcon />
+                                                                        </IconButton>
+                                                                    </>
+                                                                ) : (
+                                                                    <IconButton
+                                                                        aria-label="delete"
+                                                                        onClick={() =>
+                                                                            onToggleEditMode(
+                                                                                state_id,
+                                                                                "city",
+                                                                                district_id,
+                                                                                row.id
+                                                                            )
+                                                                        }
+                                                                    >
+                                                                        <EditIcon />
+                                                                    </IconButton>
+                                                                )}
+                                                            </TableCell>
+                                                        </TableRow>)
+                                                }
+                                                }
+                                            </Formik>
                                         ))
                                         : []}
                                 </TableBody>
@@ -285,7 +341,7 @@ function Row(props) {
                     console.log(values)
                     // handleSubmit(values);
                 }}>{({ values, touched, errors, isSubmitting }) => {
-                    console.log(values)
+                    console.log("values", values)
                     return (
                         <TableRow sx={{ "& > *": { borderBottom: "unset" } }}>
                             <TableCell>
@@ -297,7 +353,7 @@ function Row(props) {
                                     {open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
                                 </IconButton>
                             </TableCell>
-                         {/* <Form> */}
+                            {/* <Form> */}
 
                             <CustomTableCell
                                 {...{ row, name: "name", onChange, editOn: "state", state_id, touched, errors, values }}
@@ -308,7 +364,7 @@ function Row(props) {
                             <CustomTableCell
                                 {...{ row, name: "description", onChange, editOn: "state", state_id, touched, errors, values }}
                             />
-                        {/* </Form> */}
+                            {/* </Form> */}
 
                             <TableCell
                             // className={classes.selectTableCell}
@@ -317,11 +373,21 @@ function Row(props) {
                                     <>
                                         <IconButton
                                             aria-label="done"
-                                            onClick={() => onToggleEditMode(row.id)}
+                                            onClick={() => {
+                                                if (isEmpty(errors)) {
+                                                    console.log("errors", errors)
+                                                    onToggleEditMode(row.id)
+                                                }
+                                            }}
                                         >
                                             <DoneIcon />
                                         </IconButton>
-                                        <IconButton aria-label="revert" onClick={() => onRevert(row.id)}>
+                                        <IconButton aria-label="revert" onClick={() => {
+                                            if (isEmpty(errors)) {
+                                                console.log("errors", errors);
+                                                onRevert(row.id);
+                                            }
+                                        }}>
                                             <RevertIcon />
                                         </IconButton>
                                     </>
@@ -400,32 +466,35 @@ Row.propTypes = {
 
 export default function CollapsibleTable() {
     const [previous, setPrevious] = React.useState({});
-    const [rows, setRows] = React.useState([...STATESDATA]);
-    // alert(JSON.stringify(rows));
-    // const { isEditMode } = rows;
+    let [page, setPage] = React.useState(1);
+    const PER_PAGE = 3;
 
-    //   React.useEffect(async ()=>{
-    //     const url = API.CORE.STATEDATA;
-    //     try {
-    //         const response = await fetch(url);
-    //         console.log(response)
-    //         setRows(response.data)
-    //     }
-    //     catch{
-    //         console.log("Issue in fetching states data");
-    //     }
-    // }, [])
+    const count = Math.ceil(STATESDATA.length / PER_PAGE);
+    const _DATA = usePagination(STATESDATA, PER_PAGE);
+
+
+    const [rows, setRows] = React.useState([..._DATA.currentData()]);
+    const handleChange = (e, p) => {
+        setPage(p);
+        _DATA.jump(p);
+        console.log("_DATA", _DATA);
+        setRows([..._DATA.currentData()])
+    };
     const onToggleEditMode = (
         state_id,
         editOn = "state",
         district_id,
-        city_id
+        city_id,
+        changedRows
     ) => {
         // alert(state_id);
         // state ho
+        console.log("toggle rows", rows, changedRows);
+        let newrows=changedRows?[...changedRows]:[...rows];
+        console.log("newrows", newrows)
         if (editOn === "state") {
             setRows((state) => {
-                return rows.map((row) => {
+                return newrows.map((row) => {
                     if (row.id === state_id) {
                         return { ...row, isEditMode: !row.isEditMode };
                     }
@@ -436,9 +505,9 @@ export default function CollapsibleTable() {
         if (editOn === "district") {
             // district
             setRows((state) => {
-                return rows.map((row) => {
+                return newrows.map((row) => {
                     if (row.id === state_id) {
-                        row.districts = row.districts.map((row) => {
+                        row.districts = row?.districts.map((row) => {
                             if (row.id === district_id) {
                                 return { ...row, isEditMode: !row.isEditMode };
                             }
@@ -453,13 +522,13 @@ export default function CollapsibleTable() {
         // cities
         if (editOn === "city") {
             setRows((state) => {
-                return rows.map((row) => {
+                return newrows.map((row) => {
                     if (row.id === state_id) {
-                        row.districts = row.districts.map((row) => {
+                        row.districts = row?.districts?.map((row) => {
                             if (row.id === district_id) {
-                                row.cities = row.cities.map((row) => {
+                                row.cities = row?.cities?.map((row) => {
                                     if (row.id === city_id) {
-                                        return { ...row, isEditMode: !row.isEditMode };
+                                        return { ...row, isEditMode: !row?.isEditMode };
                                     }
                                     return row;
                                 });
@@ -476,7 +545,7 @@ export default function CollapsibleTable() {
     };
 
     const onChange = (e, row, editOn, state_id, district_id, city_id) => {
-        // alert(editOn);
+        console.log("previous", previous[row.id]);
         if (editOn === "state") {
             if (!previous[row.id]) {
                 setPrevious((state) => ({ ...state, [row.id]: row }));
@@ -493,7 +562,7 @@ export default function CollapsibleTable() {
             setRows(newRows);
         }
         if (editOn === "district") {
-            if (!previous[rows[state_id].districts[district_id]]) {
+            if (!previous[rows[state_id]]) {
                 setPrevious((state) => ({
                     ...state,
                     [rows[state_id]?.districts[district_id]?.id]: row
@@ -503,7 +572,7 @@ export default function CollapsibleTable() {
             const name = e.target.name;
             const newRows = rows.map((row) => {
                 if (row.id === state_id) {
-                    row.districts = row.districts.map((row) => {
+                    row.districts = row?.districts?.map((row) => {
                         if (row.id === district_id) {
                             return { ...row, [name]: value };
                         }
@@ -517,7 +586,7 @@ export default function CollapsibleTable() {
         }
         if (editOn === "city") {
             // alert(city_id);
-            if (!previous[rows[state_id]?.districts[district_id]]?.cities[city_id]) {
+            if (!previous[rows[state_id]]) {
                 setPrevious((state) => ({
                     ...state,
                     [rows[state_id]?.districts[district_id]?.cities[city_id]?.id]: row
@@ -548,31 +617,47 @@ export default function CollapsibleTable() {
     };
 
     const onRevert = (state_id, editOn = "state", district_id, city_id) => {
+        console.log(state_id, editOn, district_id, city_id, previous[state_id])
         const newRows = rows.map((row) => {
             if (row.id === state_id) {
                 return previous[state_id] ? previous[state_id] : row;
             }
             return row;
         });
+        console.log("newRows", newRows)
         setRows(newRows);
+        console.log("Previous before", previous[state_id])
         setPrevious((state) => {
             delete state[state_id];
             return state;
         });
+        console.log("Previous again", previous[state_id])
+        console.log("newRows again", newRows)
         if (editOn === "state") {
-            onToggleEditMode(state_id);
+            onToggleEditMode(state_id, "state", null, null, newRows);
         }
         if (editOn === "district") {
-            onToggleEditMode(state_id, "district", district_id);
+            onToggleEditMode(state_id, "district", district_id, null, newRows);
         }
         if (editOn === "city") {
-            onToggleEditMode(state_id, "city", district_id, city_id);
+            onToggleEditMode(state_id, "city", district_id, city_id, newRows);
         }
     };
+
     return (
         <Box className="">
 
             <div className="container mt-5 pt-5">
+                <div className="row">
+                    <Pagination
+                        count={count}
+                        size="large"
+                        page={page}
+                        variant="outlined"
+                        shape="rounded"
+                        onChange={handleChange}
+                    />
+                </div>
                 <div className="row">
                     <TableContainer component={Paper}>
                         <Table aria-label="collapsible table">
@@ -589,7 +674,7 @@ export default function CollapsibleTable() {
                                     <Row
                                         key={row.name}
                                         row={row}
-                                        state_id={row.id}
+                                        state_id={row?.id}
                                         onToggleEditMode={onToggleEditMode}
                                         onChange={onChange}
                                         onRevert={onRevert}

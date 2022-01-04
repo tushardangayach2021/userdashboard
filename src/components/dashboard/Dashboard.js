@@ -10,6 +10,8 @@ import { Box } from "@mui/material";
 import ViewData from "../ViewData";
 import EditUser from "../../containers/EditUser";
 import StatesList from "../../containers/StatesList";
+import GridGame from "../../containers/GridGame";
+import GridDragGame from "../../containers/GridDragGame";
 // import ViewData from "./ViewData";
 
 // const ViewData = React.lazy(() => import("./ViewData")); // Lazy-loaded
@@ -25,6 +27,8 @@ function Dashboard(props) {
         <Route exact path="/dashboard/viewdata" component={()=>(<ViewData isUserLogin={props.isUserLogin} loginedUser={props.loginedUser} signoutUser={props.signoutUser} checkUserLogin={props.checkUserLogin} />)} />
         <Route exact path="/dashboard/edituser" component={()=>(<EditUser isUserLogin={props.isUserLogin} loginedUser={props.loginedUser} signoutUser={props.signoutUser} checkUserLogin={props.checkUserLogin} />)} />
         <Route exact path="/dashboard/stateslist" component={()=>(<StatesList isUserLogin={props.isUserLogin} loginedUser={props.loginedUser} signoutUser={props.signoutUser} checkUserLogin={props.checkUserLogin} />)} />
+        <Route exact path="/dashboard/gridgame" component={()=>(<GridGame isUserLogin={props.isUserLogin} loginedUser={props.loginedUser} signoutUser={props.signoutUser} checkUserLogin={props.checkUserLogin} />)} />
+        <Route exact path="/dashboard/griddraggame" component={()=>(<GridDragGame isUserLogin={props.isUserLogin} loginedUser={props.loginedUser} signoutUser={props.signoutUser} checkUserLogin={props.checkUserLogin} />)} />
     </Switch>
     </Box>
       </>

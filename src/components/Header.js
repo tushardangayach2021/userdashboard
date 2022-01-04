@@ -21,6 +21,7 @@ import { Bell, Clock, LogOut, User } from 'react-feather'
 import { useTranslation } from 'react-i18next';
 import localStorageService from '../api/localStorageService';
 import { isEmpty } from '../helpers/utils';
+import { Link } from 'react-router-dom';
 
 const drawerWidth = 240;
 
@@ -193,13 +194,15 @@ export default function MiniDrawer(props) {
         </DrawerHeader>
         <Divider />
         <List>
-          {['Inbox', 'Starred', 'Send email', 'Drafts'].map((text, index) => (
-            <ListItem button key={text}>
+          {['stateslist', 'Starred', 'Send email', 'Drafts'].map((text, index) => (
+            <Link to={text} key={text}>
+            <ListItem button >
               <ListItemIcon>
                 {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
               </ListItemIcon>
               <ListItemText primary={text} />
             </ListItem>
+            </Link>
           ))}
         </List>
         {/* <Divider /> */}
